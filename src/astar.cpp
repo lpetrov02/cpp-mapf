@@ -1,8 +1,29 @@
+#include <fstream>
+
 #include "astarStructs.h"
 
 
 int computeCost(int i1, int j1, int i2, int j2) {
     return std::abs(i1 - i2) + std::abs(j1 - j2);
+}
+
+
+std::tuple<int, int, std::string> getMap(std::string filename) {
+    std::ifstream input;
+    input.open(filename);
+
+    int w, h;
+    std::string res = "", tmp;
+
+    input >> w >> h;
+    getline(input, tmp);
+    while (getline(input, tmp)) {
+        std::cout << tmp << std::endl;
+        res = res + tmp + "\n";
+    }
+
+    input.close();
+    return std::tuple<int, int, std::string>(w, h, res);
 }
 
 
@@ -49,7 +70,14 @@ std::tuple<bool, Node, int> astar(Map gridMap, Agent agent, std::function<int(in
 
 
 int main() {
-    std::cout << "Hello world!" << std::endl;
+    auto mapInfo = getMap("./samples/map0.txt");
 
+    Map map = Map();
+    map.readFromString(std::get<2>(mapInfo), std::get<0>(mapInfo), std::get<1>(mapInfo));
+
+    Agent agent = Agent(0, std::pair<int, int>(0, 0), std::pair<int, int>(0, 2));
+
+    auto astarRes = astar(map, agent);
+    std::cout << std::get<0>(astarRes) << std::endl;
     return 0;
 }

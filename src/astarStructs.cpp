@@ -37,7 +37,7 @@ std::size_t hashBaseNode::operator()(BaseNode const& s) const {
 // NODE
 Node::Node(int i, int j, int g, int h, Node* parent) 
     : _i{i}, _j{j}, _g{g}, _h{h}, _time{0}, _node{BaseNode(i, j)}, _parent(parent) {
-    if (parent == nullptr) {
+    if (parent != nullptr) {
         _time = parent->_time + 1;
         _f = _time + _h;
     }

@@ -96,7 +96,6 @@ private:
 class Map {
 public:
     Map();
-    ~Map();    
     void readFromString(std::string cellStr, int width, int height);    
     void setGridCells(int width, int height, std::vector<std::vector<int>> grid_cells);
     bool inBounds(int i, int j);
