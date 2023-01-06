@@ -1,13 +1,3 @@
-#include <algorithm>
-#include <cmath>
-#include <functional>
-#include <iostream>
-#include <tuple>
-#include <unordered_map>
-#include <unordered_set>
-#include <utility>
-#include <vector>
-
 #include "astarStructs.h"
 
 
@@ -19,7 +9,7 @@ int computeCost(int i1, int j1, int i2, int j2) {
 std::tuple<bool, Node, int> astar(Map gridMap, Agent agent, std::function<int(int, int, int, int)> heuristicFunc = manhattan) {
     auto ast = SearchTree();
     int steps = 0, nodesCreated = 0;
-    int current_i, current_j, time;
+    int current_i, current_j;
     
     BaseNode currentPoint = agent.getStart();
     std::tie(current_i, current_j) = currentPoint.getTuple();
@@ -30,7 +20,7 @@ std::tuple<bool, Node, int> astar(Map gridMap, Agent agent, std::function<int(in
 
     while (!ast.openIsEmpty()) {
         currentNode = ast.getBestNodeFromOpen();
-        std::tie(current_i, current_j, std::ignore()) = currentNode.getTuple();
+        std::tie(current_i, current_j, std::ignore) = currentNode.getTuple();
         currentPoint = BaseNode(current_i, current_j);
         if (ast.wasExpanded(currentNode)) {
             break;
@@ -42,20 +32,19 @@ std::tuple<bool, Node, int> astar(Map gridMap, Agent agent, std::function<int(in
         for (auto& point : neighbors) {
             nodesCreated += 1;
             auto newNode = Node(
-                point.first, point.second, g=currentNode._g + computeCost(point.first, point.second, currentNode._i, currentNode._j), 
-                h=heuristicFunc(agent.getGoal._i, agent.getGoal()._j, point.first, point.second), parent = currentNode
-            );
-            newPoint = BaseNode(newNode._i, newNode._j);
+                point.first, point.second, currentNode._g + computeCost(point.first, point.second, currentNode._i, currentNode._j), 
+                heuristicFunc(agent.getGoal()._i, agent.getGoal()._j, point.first, point.second), &currentNode);
+            auto newPoint = BaseNode(newNode._i, newNode._j);
             if (!ast.wasExpanded(newNode) /*&& constraints.is_allowed(agent, new_node.time, current_base_node, new_base_node)*/) {  
                 if (newPoint == agent.getGoal() /*&& newNode.time > latest_constraint*/) {
-                    return True, newNode, steps;
+                    return std::tuple<bool, Node, int>(true, newNode, steps);
                 }
                 ast.addToOpen(newNode);
             }
         }
     }
         
-    return False, Node(-1, -1), steps;
+    return std::tuple<bool, Node, int>(false, Node(-1, -1), steps);
 }
 
 
