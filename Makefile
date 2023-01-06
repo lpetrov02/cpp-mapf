@@ -3,7 +3,7 @@ OBJECTS = obj/astar.o obj/astarStructs.o
 
 .PHONY: all clean
 
-all: algorithm
+all: algo
 
 obj:
 	mkdir obj
@@ -15,8 +15,8 @@ $(OBJECTS): obj/%.o: src/%.cpp
 astar.o : astarStructs.h
 astarStructs.o : astarStructs.h
 
-algorithm : obj $(OBJECTS)
+algo : obj $(OBJECTS)
 	g++ $(CXXFLAGS) -o $@ $(OBJECTS)
 
 clean :
-	$(RM) -f -r obj algorithm
+	$(RM) -f -r obj algo

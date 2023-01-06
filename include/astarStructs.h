@@ -14,30 +14,27 @@
 #include <vector>
 
 
-int mamhattan(int i1, int j1, int i2, int j2);
+int manhattan(int i1, int j1, int i2, int j2);
 
 
 struct BaseNode {
-    template<>
-    friend struct hash<BaseNode>;
-    friend bool operator==(BaseNode const& other);
-    friend bool operator<(NaseNode const& other);
+    friend bool operator==(BaseNode const& first, BaseNode const& second);
+    friend bool operator<(BaseNode const& first, BaseNode const& second);
     friend std::ostream& operator<<(std::ostream& os, BaseNode const& baseNode);
 public:
-    BaseNode(int i, int j);
-    std::tuple<int, int> getTuple();
+    BaseNode(int i = 0, int j = 0);
+    std::tuple<int, int> getTuple() const;
 
 public:
-    int _i, _j;
+    int _i;
+    int _j;
 };
 
-bool operator==(BaseNode const& other);
-bool operator<(BaseNode const& other);
+bool operator==(BaseNode const& first, BaseNode const& second);
+bool operator<(BaseNode const& first, BaseNode const& second);
 std::ostream& operator<<(std::ostream& os, BaseNode const& node);
 
-template<>
-struct hash<BaseNode>
-{
+struct hashBaseNode {
     typedef BaseNode argument_type;
     typedef std::size_t result_type;
 
@@ -46,31 +43,31 @@ struct hash<BaseNode>
 
 
 class Node {
-    template<>
-    friend struct hash<Node>;
-    friend bool operator==(Node const& other);
-    friend bool operator<(Node const& other);
+    friend bool operator==(Node const& first, Node const& second);
+    friend bool operator<(Node const& first, Node const& second);
     friend std::ostream& operator<<(std::ostream& os, const Node& node);
 public:
-    Node(int i, int j, int g = 0, int h = 0, int f = None, 
-        Node* parent = None, std::function<int(int, int, int, int)> tie_breaking_func = None);
+    Node(int i, int j, int g = 0, int h = 0, Node* parent = nullptr);
     std::tuple<int, int, int> getTuple() const;
 
+public:
+    int _i;
+    int _j;
+    int _g;
+    int _h;
+    int _time;
+    int _f;
 private:
     BaseNode _node;
-    Node* parent;
-public:
-    int _i, _j, _time, _g, _h, _f;
+    Node* _parent;
 
 };
 
-bool operator==(Node const& other);
-bool operator<(Node const& other);
+bool operator==(Node const& first, Node const& second);
+bool operator<(Node const& first, Node const& second);
 std::ostream& operator<<(std::ostream& os, Node const& node);
 
-template<>
-struct hash<Node>
-{
+struct hashNode {
     typedef Node argument_type;
     typedef std::size_t result_type;
 
@@ -84,15 +81,15 @@ public:
     size_t getSize();
     bool openIsEmpty();
     void addToOpen(Node const& item);
-    Node& getBestNodeFromOpen();    
+    Node getBestNodeFromOpen();    
     void addToClosed(Node& item);
     bool wasExpanded(Node& item);
     std::vector<Node> OPEN();
-    std::unordered_set<Node> CLOSED();
+    std::unordered_set<Node, hashNode> CLOSED();
 
 private:
     std::vector<Node> _open;
-    std::unordered_set<Node> _closed;
+    std::unordered_set<Node, hashNode> _closed;
 };
 
 
@@ -101,25 +98,25 @@ public:
     Map();
     ~Map();    
     void readFromString(std::string cellStr, int width, int height);    
-    def setGridCells(int width, int height, int** grid_cells);
-    def inBounds(int i, int j);
-    def isTraversable(i, j);
-    std::vector<std::pair<int, int> getNeighbors(i, j);
+    void setGridCells(int width, int height, std::vector<std::vector<int>> grid_cells);
+    bool inBounds(int i, int j);
+    bool isTraversable(int i, int j);
+    std::vector<std::pair<int, int>> getNeighbors(int i, int j);
     std::pair<int, int> getSize();
 
 private:
     int _width;
-    int _heigt;
-    int** _cells;
+    int _height;
+    std::vector<std::vector<int>> _cells;
 };
 
 
 class Agent {
 public:
-    Agent(int index, std::pair<int, int> start = {0, 0}, std::pair<int, int> finish = {0, 0});
-    BaseNode getStart();
-    BaseNode getGoal();
-    BaseNode getIndex();
+    Agent(int index, std::pair<int, int> start, std::pair<int, int> finish);
+    BaseNode getStart() const;
+    BaseNode getGoal() const;
+    int getIndex() const;
 
 private:
     int _index;
@@ -127,13 +124,11 @@ private:
     BaseNode _goal;
 };
 
-bool operator==(Agent const& other);
-bool operator<(Agent const& other);
+bool operator==(Agent const& first, Agent const& second);
+bool operator<(Agent const& first, Agent const& second);
 std::ostream& operator<<(std::ostream& os, Agent const& node);
 
-template<>
-struct hash<Agent>
-{
+struct hashAgent {
     typedef Agent argument_type;
     typedef std::size_t result_type;
 
