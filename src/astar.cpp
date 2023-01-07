@@ -3,6 +3,19 @@
 #include "astarStructs.h"
 
 
+struct AstarRes {
+public:
+    AstarRes(bool found, Node goal, std::vector<std::pair<int, int>> path, int steps) 
+    : _found(found), _goal{goal}, _steps(steps), _path(path) {}
+
+public:
+    bool _found;
+    Node _goal;
+    int _steps;
+    std::vector<std::pair<int, int>> _path;
+};
+
+
 int computeCost(int i1, int j1, int i2, int j2) {
     return std::abs(i1 - i2) + std::abs(j1 - j2);
 }
@@ -27,7 +40,19 @@ std::tuple<int, int, std::string> getMap(std::string filename) {
 }
 
 
-std::tuple<bool, Node, int> astar(Map gridMap, Agent agent, std::function<int(int, int, int, int)> heuristicFunc = manhattan) {
+void writePathToFile(std::vector<std::pair<int, int>> path, std::string filename) {
+    std::ofstream output;
+    output.open(filename);
+
+    for (auto it = path.rbegin(); it != path.rend(); it++) {
+        output << it->first << " " << it->second << "\n";
+    }
+
+    output.close();
+}
+
+
+AstarRes astar(Map gridMap, Agent agent, std::function<int(int, int, int, int)> heuristicFunc = manhattan) {
     auto ast = SearchTree();
     int steps = 0, nodesCreated = 0;
     int current_i, current_j;
@@ -54,18 +79,27 @@ std::tuple<bool, Node, int> astar(Map gridMap, Agent agent, std::function<int(in
             nodesCreated += 1;
             auto newNode = Node(
                 point.first, point.second, currentNode._g + computeCost(point.first, point.second, currentNode._i, currentNode._j), 
-                heuristicFunc(agent.getGoal()._i, agent.getGoal()._j, point.first, point.second), &currentNode);
+                heuristicFunc(agent.getGoal()._i, agent.getGoal()._j, point.first, point.second), currentNode.getTuple());
             auto newPoint = BaseNode(newNode._i, newNode._j);
             if (!ast.wasExpanded(newNode) /*&& constraints.is_allowed(agent, new_node.time, current_base_node, new_base_node)*/) {  
                 if (newPoint == agent.getGoal() /*&& newNode.time > latest_constraint*/) {
-                    return std::tuple<bool, Node, int>(true, newNode, steps);
+                    Node curNode = newNode;
+                    std::vector<std::pair<int, int>> res;
+
+                    while (ast.CLOSED().contains(curNode.getParentTuple())) {
+                        res.push_back(std::pair<int, int>(curNode._i, curNode._j));
+                        curNode = ast.CLOSED().find(curNode.getParentTuple())->second;
+                    }
+                    res.push_back(std::pair<int, int>(curNode._i, curNode._j));
+
+                    return AstarRes(true, newNode, res, steps);
                 }
                 ast.addToOpen(newNode);
             }
         }
     }
         
-    return std::tuple<bool, Node, int>(false, Node(-1, -1), steps);
+    return AstarRes(false, Node(-1, -1), std::vector<std::pair<int, int>>(), steps);
 }
 
 
@@ -78,6 +112,8 @@ int main() {
     Agent agent = Agent(0, std::pair<int, int>(0, 0), std::pair<int, int>(0, 2));
 
     auto astarRes = astar(map, agent);
-    std::cout << std::get<0>(astarRes) << std::endl;
+    std::cout << (astarRes._found ? "Found!" : "Not found") << std::endl;
+
+    writePathToFile(astarRes._path, "./results/res0.txt");
     return 0;
 }

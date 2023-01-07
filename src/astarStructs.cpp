@@ -30,15 +30,15 @@ std::ostream& operator<<(std::ostream& os, BaseNode const& baseNode) {
 
 std::size_t hashBaseNode::operator()(BaseNode const& s) const {
      auto ij = s.getTuple();
-     return std::hash<int>{}(std::get<0>(ij)) ^ std::hash<int>{}(std::get<1>(ij));
+     return std::hash<int>{}(std::get<0>(ij)) ^ (std::hash<int>{}(std::get<1>(ij)) << 1);
 }
 
 
 // NODE
-Node::Node(int i, int j, int g, int h, Node* parent) 
-    : _i{i}, _j{j}, _g{g}, _h{h}, _time{0}, _node{BaseNode(i, j)}, _parent(parent) {
-    if (parent != nullptr) {
-        _time = parent->_time + 1;
+Node::Node(int i, int j, int g, int h, std::tuple<int, int, int> parentTuple) 
+    : _i{i}, _j{j}, _g{g}, _h{h}, _time{0}, _node{BaseNode(i, j)}, _parentTuple{parentTuple} {
+    if (std::get<2>(_parentTuple) != -1) {
+        _time = std::get<2>(_parentTuple) + 1;
         _f = _time + _h;
     }
 }
@@ -47,13 +47,17 @@ std::tuple<int, int, int> Node::getTuple() const {
     return std::tuple<int, int, int>(_i, _j, _time);
 }
 
+std::tuple<int, int, int> Node::getParentTuple() const {
+    return _parentTuple;
+}
+
 bool operator==(Node const& first, Node const& second) {
     return first._i == second._i && first._j == second._j && first._time == second._time;
 }
 
 bool operator<(Node const& first, Node const& second) { 
     if (first._f == second._f)
-        return first._g < second._g;
+        return first._time > second._time;
     return first._f < second._f;
 }
 
@@ -64,14 +68,19 @@ std::ostream& operator<<(std::ostream& os, Node const& node) {
 
 std::size_t hashNode::operator()(Node const& s) const {
     auto ijt = s.getTuple();
-    return std::hash<int>{}(std::get<0>(ijt)) ^ std::hash<int>{}(std::get<1>(ijt)) ^ std::hash<int>{}(std::get<2>(ijt));
+    return std::hash<int>{}(std::get<0>(ijt)) ^ (std::hash<int>{}(std::get<1>(ijt)) << 1) ^ (std::hash<int>{}(std::get<2>(ijt)) << 2);
 }
+
+std::size_t hashTuple3::operator()(std::tuple<int, int, int> const& s) const {
+    return std::hash<int>{}(std::get<0>(s)) ^ (std::hash<int>{}(std::get<1>(s)) << 1) ^ (std::hash<int>{}(std::get<2>(s)) << 2);
+}
+
 
 
 // SEARCH TREE
 SearchTree::SearchTree() {
     _open = std::vector<Node>();
-    _closed = std::unordered_set<Node, hashNode>();
+    _closed = std::unordered_map<std::tuple<int, int, int>, Node, hashTuple3>();
 }
     
 size_t SearchTree::getSize() {
@@ -88,32 +97,30 @@ void SearchTree::addToOpen(Node const& item) {
 }
 
 Node SearchTree::getBestNodeFromOpen() {
-    auto bestNode = _open[0];
-    std::pop_heap(_open.begin(), _open.end());
+    auto bestNode = _open[_open.size() - 1];
     _open.pop_back();
     while (wasExpanded(bestNode) and _open.size() > 0) {
-        bestNode = _open[0];
-        std::pop_heap(_open.begin(), _open.end());
+        bestNode = _open[_open.size() - 1];
         _open.pop_back(); 
     }
     return bestNode;
 }
     
 void SearchTree::addToClosed(Node& item) {
-    _closed.insert(item);
+    _closed.insert(std::pair<std::tuple<int, int, int>, Node>(item.getTuple(), item));
 }
 
 bool SearchTree::wasExpanded(Node& item) {
-    return _closed.contains(item);
+    return _closed.contains(item.getTuple());
 }
 
-    std::vector<Node> SearchTree::OPEN() {
-        return _open;
-    }
-    
-    std::unordered_set<Node, hashNode> SearchTree::CLOSED() {
-        return _closed;
-    }
+std::vector<Node> SearchTree::OPEN() {
+    return _open;
+}
+
+std::unordered_map<std::tuple<int, int, int>, Node, hashTuple3> SearchTree::CLOSED() {
+    return _closed;
+}
 
 
 // MAP
@@ -176,7 +183,7 @@ bool Map::isTraversable(int i, int j) {
 
 std::vector<std::pair<int, int>> Map::getNeighbors(int i, int j) {  
     auto neighbors = std::vector<std::pair<int, int>>();
-    std::vector<std::pair<int, int>> delta = { {0, 1}, {1, 0}, {0, -1}, {-1, 0}, {0, 0} };
+    std::vector<std::pair<int, int>> delta = { {0, 1}, {1, 0}, {0, -1}, {-1, 0} };
     for (auto& d : delta) {
         if (inBounds(i + d.first, j + d.second) and isTraversable(i + d.first, j + d.second)) {
             neighbors.push_back({i + d.first, j + d.second});
