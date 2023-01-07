@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <vector>
 #include <exception>
 #include <functional>
 #include <iostream>
@@ -47,8 +48,9 @@ class Node {
     friend bool operator<(Node const& first, Node const& second);
     friend std::ostream& operator<<(std::ostream& os, const Node& node);
 public:
-    Node(int i, int j, int g = 0, int h = 0, Node* parent = nullptr);
+    Node(int i, int j, int g = 0, int h = 0, std::tuple<int, int, int> parentTuple = std::tuple<int, int, int>(-1, -1, -1));
     std::tuple<int, int, int> getTuple() const;
+    std::tuple<int, int, int> getParentTuple() const;
 
 public:
     int _i;
@@ -57,10 +59,10 @@ public:
     int _h;
     int _time;
     int _f;
+
 private:
     BaseNode _node;
-    Node* _parent;
-
+    std::tuple<int, int, int> _parentTuple;
 };
 
 bool operator==(Node const& first, Node const& second);
@@ -74,7 +76,15 @@ struct hashNode {
     result_type operator()(argument_type const& s) const;
 };
 
+struct hashTuple3 {
+    typedef std::tuple<int, int, int> argument_type;
+    typedef std::size_t result_type;
 
+    result_type operator()(argument_type const& s) const;
+};
+
+
+// SEARCH TREE
 class SearchTree {
 public:
     SearchTree();
@@ -85,18 +95,17 @@ public:
     void addToClosed(Node& item);
     bool wasExpanded(Node& item);
     std::vector<Node> OPEN();
-    std::unordered_set<Node, hashNode> CLOSED();
+    std::unordered_map<std::tuple<int, int, int>, Node, hashTuple3> CLOSED();
 
 private:
     std::vector<Node> _open;
-    std::unordered_set<Node, hashNode> _closed;
+    std::unordered_map<std::tuple<int, int, int>, Node, hashTuple3> _closed;
 };
 
 
 class Map {
 public:
     Map();
-    ~Map();    
     void readFromString(std::string cellStr, int width, int height);    
     void setGridCells(int width, int height, std::vector<std::vector<int>> grid_cells);
     bool inBounds(int i, int j);
