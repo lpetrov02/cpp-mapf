@@ -143,3 +143,12 @@ struct hashAgent {
 
     result_type operator()(argument_type const& s) const;
 };
+
+
+// std::ostream& operator<<(std::ostream& os, std::vector<Node> const& vec) {
+//     for (auto& v : vec) {
+//         os << v << "; ";
+//     }
+
+//     return os;
+// }

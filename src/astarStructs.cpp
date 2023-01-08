@@ -55,14 +55,15 @@ bool operator==(Node const& first, Node const& second) {
     return first._i == second._i && first._j == second._j && first._time == second._time;
 }
 
+//TODO
 bool operator<(Node const& first, Node const& second) { 
     if (first._f == second._f)
-        return first._time > second._time;
-    return first._f < second._f;
+        return first._time <= second._time;
+    return first._f > second._f;
 }
 
 std::ostream& operator<<(std::ostream& os, Node const& node) {
-    os << node._i << " " << node._j << " " << node._time;
+    os << "(" << node._i << ", " << node._j << ") t=" << node._time << ", f=" << node._f;
     return os;
 }
 
@@ -97,9 +98,11 @@ void SearchTree::addToOpen(Node const& item) {
 }
 
 Node SearchTree::getBestNodeFromOpen() {
+    std::pop_heap(_open.begin(), _open.end());
     auto bestNode = _open[_open.size() - 1];
     _open.pop_back();
     while (wasExpanded(bestNode) and _open.size() > 0) {
+        std::pop_heap(_open.begin(), _open.end());
         bestNode = _open[_open.size() - 1];
         _open.pop_back(); 
     }
@@ -183,7 +186,7 @@ bool Map::isTraversable(int i, int j) {
 
 std::vector<std::pair<int, int>> Map::getNeighbors(int i, int j) {  
     auto neighbors = std::vector<std::pair<int, int>>();
-    std::vector<std::pair<int, int>> delta = { {0, 1}, {1, 0}, {0, -1}, {-1, 0} };
+    std::vector<std::pair<int, int>> delta = { {0, 1}, {1, 0}, {0, -1}, {-1, 0}, {0, 0} };
     for (auto& d : delta) {
         if (inBounds(i + d.first, j + d.second) and isTraversable(i + d.first, j + d.second)) {
             neighbors.push_back({i + d.first, j + d.second});
