@@ -5,14 +5,14 @@
 
 struct AstarRes {
 public:
-    AstarRes(bool found, Node goal, std::vector<std::tuple<int, int, int, int>> path, int steps) 
+    AstarRes(bool found, Node goal, std::vector<BaseNode> path, int steps) 
     : _found(found), _goal{goal}, _steps(steps), _path(path) {}
 
 public:
     bool _found;
     Node _goal;
     int _steps;
-    std::vector<std::tuple<int, int, int, int>> _path;
+    std::vector<BaseNode> _path;
 };
 
 
@@ -40,12 +40,12 @@ std::tuple<int, int, std::string> getMap(std::string filename) {
 }
 
 
-void writePathToFile(std::vector<std::tuple<int, int, int, int>> path, std::string filename) {
+void writePathToFile(std::vector<BaseNode> path, std::string filename) {
     std::ofstream output;
     output.open(filename);
 
     for (auto it = path.rbegin(); it != path.rend(); it++) {
-        output << std::get<0>(*it) << " " << std::get<1>(*it) << " " << std::get<2>(*it) << " " << std::get<3>(*it) << "\n";
+        output << *it << "\n";
     }
 
     output.close();
@@ -66,8 +66,6 @@ AstarRes astar(Map gridMap, Agent agent, std::function<int(int, int, int, int)> 
 
     while (!ast.openIsEmpty()) {
         currentNode = ast.getBestNodeFromOpen();
-        // std::cout << ast.OPEN() << std::endl;
-        // std::cout << currentNode << "\n" << std::endl;
 
         std::tie(current_i, current_j, std::ignore) = currentNode.getTuple();
         currentPoint = BaseNode(current_i, current_j);
@@ -81,19 +79,19 @@ AstarRes astar(Map gridMap, Agent agent, std::function<int(int, int, int, int)> 
         for (auto& point : neighbors) {
             nodesCreated += 1;
             auto newNode = Node(
-                point.first, point.second, currentNode._g + computeCost(point.first, point.second, currentNode._i, currentNode._j), 
+                point.first, point.second, 
                 heuristicFunc(agent.getGoal()._i, agent.getGoal()._j, point.first, point.second), currentNode.getTuple());
             auto newPoint = BaseNode(newNode._i, newNode._j);
             if (!ast.wasExpanded(newNode) /*&& constraints.is_allowed(agent, new_node.time, current_base_node, new_base_node)*/) {  
                 if (newPoint == agent.getGoal() /*&& newNode.time > latest_constraint*/) {
                     Node curNode = newNode;
-                    std::vector<std::tuple<int, int, int, int>> res;
+                    std::vector<BaseNode> res;
 
                     while (ast.CLOSED().contains(curNode.getParentTuple())) {
-                        res.push_back(std::tuple<int, int, int, int>(curNode._i, curNode._j, curNode._time, curNode._h));
+                        res.push_back(curNode.getBaseNode());
                         curNode = ast.CLOSED().find(curNode.getParentTuple())->second;
                     }
-                    res.push_back(std::tuple<int, int, int, int>(curNode._i, curNode._j, curNode._time, curNode._h));
+                    res.push_back(curNode.getBaseNode());
 
                     return AstarRes(true, newNode, res, steps);
                 }
@@ -102,7 +100,7 @@ AstarRes astar(Map gridMap, Agent agent, std::function<int(int, int, int, int)> 
         }
     }
         
-    return AstarRes(false, Node(-1, -1), std::vector<std::tuple<int, int, int, int>>(), steps);
+    return AstarRes(false, Node(-1, -1), std::vector<BaseNode>(), steps);
 }
 
 
