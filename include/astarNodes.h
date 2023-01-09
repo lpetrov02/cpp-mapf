@@ -70,6 +70,13 @@ struct hashTuple3 {
     result_type operator()(argument_type const& s) const;
 };
 
+struct hashBaseNodeInt {
+    typedef std::tuple<BaseNode, int> argument_type;
+    typedef std::size_t result_type;
+
+    result_type operator()(argument_type const& s) const;
+};
+
 struct InversedComparator {
     typedef Node argument_type;
     typedef bool result_type;

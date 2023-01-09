@@ -9,6 +9,7 @@
 #include <string>
 #include <tuple>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -73,6 +74,13 @@ std::ostream& operator<<(std::ostream& os, Agent const& node);
 
 struct hashAgent {
     typedef Agent argument_type;
+    typedef std::size_t result_type;
+
+    result_type operator()(argument_type const& s) const;
+};
+
+struct hashAgentInt {
+    typedef std::tuple<Agent, int> argument_type;
     typedef std::size_t result_type;
 
     result_type operator()(argument_type const& s) const;

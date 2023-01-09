@@ -33,6 +33,10 @@ std::size_t hashBaseNode::operator()(BaseNode const& s) const {
      return std::hash<int>{}(std::get<0>(ij)) ^ (std::hash<int>{}(std::get<1>(ij)) << 1);
 }
 
+std::size_t hashBaseNodeInt::operator()(std::tuple<BaseNode, int> const& s) const {
+     return hashBaseNode{}(std::get<0>(s)) ^ (std::hash<int>{}(std::get<1>(s)) << 1);
+}
+
 
 // NODE
 Node::Node(int i, int j, int h, std::tuple<int, int, int> parentTuple) 

@@ -1,6 +1,7 @@
 #include <fstream>
 
 #include "astarStructs.h"
+#include "constraints.h"
 
 
 struct AstarRes {

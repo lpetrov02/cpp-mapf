@@ -158,3 +158,7 @@ std::ostream& operator<<(std::ostream& os, Agent const& agent) {
 std::size_t hashAgent::operator()(Agent const& s) const {
     return std::hash<int>{}(s.getIndex());
 }
+
+std::size_t hashAgentInt::operator()(std::tuple<Agent, int> const& s) const {
+    return hashAgent{}(std::get<0>(s)) ^ (std::hash<int>{}(std::get<1>(s)) << 1);
+}

@@ -1,5 +1,5 @@
 CXXFLAGS = -Wall -Werror -Wextra -g -std=c++20
-OBJECTS = obj/astar.o obj/astarStructs.o obj/astarNodes.o
+OBJECTS = obj/astar.o obj/astarStructs.o obj/astarNodes.o obj/constraints.o
 
 .PHONY: all clean
 
@@ -15,6 +15,7 @@ $(OBJECTS): obj/%.o: src/%.cpp
 astar.o : astarStructs.h
 astarStructs.o : astarStructs.h astarNodes.h
 astarNodes.o : astarNodes.h
+constraints.o : constraints.h
 
 algo : obj $(OBJECTS)
 	g++ $(CXXFLAGS) -o $@ $(OBJECTS)
