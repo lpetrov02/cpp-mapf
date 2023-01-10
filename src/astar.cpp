@@ -116,7 +116,11 @@ int main() {
     PositiveConstraints constraints;
     constraints.addConstraint(agent, 25, BaseNode(9, 9));
 
-    auto astarRes = astar(map, agent, &constraints);
+    NegativeConstraints negConstraints;
+    negConstraints.addEdgeConstraint(agent, 1, BaseNode(0, 0), BaseNode(1, 0));
+    negConstraints.addVertexConstraint(agent, 3, BaseNode(2, 0));
+
+    auto astarRes = astar(map, agent, &negConstraints);
     std::cout << (astarRes._found ? "Found!" : "Not found") << std::endl;
 
     writePathToFile(astarRes._path, "./results/res0.txt");

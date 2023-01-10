@@ -150,6 +150,7 @@ void NegativeConstraints::addVertexConstraint(Agent agent, int step, BaseNode ba
 }
 
 void NegativeConstraints::addEdgeConstraint(Agent agent, int step, BaseNode nodeFrom, BaseNode nodeTo) {
+    // Edge: nodeFrom --> nodeTo, agent at nodeTo at time step
     if (_edgeConstraints.contains(std::tuple<BaseNode, BaseNode, int>(nodeFrom, nodeTo, step))) {
         _edgeConstraints[std::tuple<BaseNode, BaseNode, int>(nodeFrom, nodeTo, step)] = std::unordered_set<Agent, hashAgent>();
     }
