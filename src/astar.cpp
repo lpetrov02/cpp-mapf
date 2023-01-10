@@ -1,59 +1,20 @@
-#include <fstream>
-
-#include "astarStructs.h"
-#include "constraints.h"
+#include "astar.h"
 
 
-struct AstarRes {
-public:
-    AstarRes(bool found, Node goal, std::vector<BaseNode> path, int steps) 
-    : _found(found), _goal{goal}, _steps(steps), _path(path) {}
-
-public:
-    bool _found;
-    Node _goal;
-    int _steps;
-    std::vector<BaseNode> _path;
-};
+AstarRes::AstarRes(bool found, std::vector<BaseNode> path, int steps) 
+: _found(found), _steps(steps), _path(path) {}
 
 
 int computeCost(int i1, int j1, int i2, int j2) {
     return std::abs(i1 - i2) + std::abs(j1 - j2);
 }
 
-
-std::tuple<int, int, std::string> getMap(std::string filename) {
-    std::ifstream input;
-    input.open(filename);
-
-    int w, h;
-    std::string res = "", tmp;
-
-    input >> w >> h;
-    getline(input, tmp);
-    while (getline(input, tmp)) {
-        std::cout << tmp << std::endl;
-        res = res + tmp + "\n";
-    }
-
-    input.close();
-    return std::tuple<int, int, std::string>(w, h, res);
+int manhattan(int i1, int j1, int i2, int j2) {
+    return std::abs(i1 - i2) + std::abs(j1 - j2);
 }
 
 
-void writePathToFile(std::vector<BaseNode> path, std::string filename) {
-    std::ofstream output;
-    output.open(filename);
-
-    for (auto it = path.rbegin(); it != path.rend(); it++) {
-        output << *it << "\n";
-    }
-
-    output.close();
-}
-
-
-AstarRes astar(Map gridMap, Agent agent, Constraints* constraints, std::function<int(int, int, int, int)> heuristicFunc = manhattan) {
+AstarRes astar(Map gridMap, Agent agent, Constraints* constraints, std::function<int(int, int, int, int)> heuristicFunc) {
     auto ast = SearchTree();
     int steps = 0, nodesCreated = 0;
     int current_i, current_j;
@@ -94,35 +55,12 @@ AstarRes astar(Map gridMap, Agent agent, Constraints* constraints, std::function
                     }
                     res.push_back(curNode.getBaseNode());
 
-                    return AstarRes(true, newNode, res, steps);
+                    return AstarRes(true, res, steps);
                 }
                 ast.addToOpen(newNode);
             }
         }
     }
         
-    return AstarRes(false, Node(-1, -1), std::vector<BaseNode>(), steps);
-}
-
-
-int main() {
-    auto mapInfo = getMap("./samples/map0.txt");
-
-    Map map = Map();
-    map.readFromString(std::get<2>(mapInfo), std::get<0>(mapInfo), std::get<1>(mapInfo));
-
-    Agent agent = Agent(0, std::pair<int, int>(0, 0), std::pair<int, int>(0, 2));
-
-    PositiveConstraints constraints;
-    constraints.addConstraint(agent, 25, BaseNode(9, 9));
-
-    NegativeConstraints negConstraints;
-    negConstraints.addEdgeConstraint(agent, 1, BaseNode(0, 0), BaseNode(1, 0));
-    negConstraints.addVertexConstraint(agent, 3, BaseNode(2, 0));
-
-    auto astarRes = astar(map, agent, &negConstraints);
-    std::cout << (astarRes._found ? "Found!" : "Not found") << std::endl;
-
-    writePathToFile(astarRes._path, "./results/res0.txt");
-    return 0;
+    return AstarRes(false, std::vector<BaseNode>(), steps);
 }

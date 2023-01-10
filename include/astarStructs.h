@@ -16,9 +16,6 @@
 #include "astarNodes.h"
 
 
-int manhattan(int i1, int j1, int i2, int j2);
-
-
 // SEARCH TREE
 class SearchTree {
 public:
