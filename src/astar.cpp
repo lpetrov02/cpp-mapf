@@ -1,6 +1,7 @@
 #include <fstream>
 
 #include "astarStructs.h"
+#include "constraints.h"
 
 
 struct AstarRes {
@@ -52,7 +53,7 @@ void writePathToFile(std::vector<BaseNode> path, std::string filename) {
 }
 
 
-AstarRes astar(Map gridMap, Agent agent, std::function<int(int, int, int, int)> heuristicFunc = manhattan) {
+AstarRes astar(Map gridMap, Agent agent, Constraints* constraints, std::function<int(int, int, int, int)> heuristicFunc = manhattan) {
     auto ast = SearchTree();
     int steps = 0, nodesCreated = 0;
     int current_i, current_j;
@@ -62,7 +63,7 @@ AstarRes astar(Map gridMap, Agent agent, std::function<int(int, int, int, int)> 
     Node currentNode = Node(current_i, current_j);
     nodesCreated += 1;
     ast.addToOpen(currentNode);
-    // latest_constraint = constraints.get_latest_constraint(agent)
+    int latestConstraint = constraints->getLatestConstraint(agent);
 
     while (!ast.openIsEmpty()) {
         currentNode = ast.getBestNodeFromOpen();
@@ -82,8 +83,8 @@ AstarRes astar(Map gridMap, Agent agent, std::function<int(int, int, int, int)> 
                 point.first, point.second, 
                 heuristicFunc(agent.getGoal()._i, agent.getGoal()._j, point.first, point.second), currentNode.getTuple());
             auto newPoint = BaseNode(newNode._i, newNode._j);
-            if (!ast.wasExpanded(newNode) /*&& constraints.is_allowed(agent, new_node.time, current_base_node, new_base_node)*/) {  
-                if (newPoint == agent.getGoal() /*&& newNode.time > latest_constraint*/) {
+            if (!ast.wasExpanded(newNode) && constraints->isAllowed(agent, newNode._t, currentPoint, newPoint)) {  
+                if (newPoint == agent.getGoal() && newNode._t > latestConstraint) {
                     Node curNode = newNode;
                     std::vector<BaseNode> res;
 
@@ -112,7 +113,10 @@ int main() {
 
     Agent agent = Agent(0, std::pair<int, int>(0, 0), std::pair<int, int>(0, 2));
 
-    auto astarRes = astar(map, agent);
+    PositiveConstraints constraints;
+    constraints.addConstraint(agent, 25, BaseNode(9, 9));
+
+    auto astarRes = astar(map, agent, &constraints);
     std::cout << (astarRes._found ? "Found!" : "Not found") << std::endl;
 
     writePathToFile(astarRes._path, "./results/res0.txt");
