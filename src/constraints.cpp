@@ -4,6 +4,7 @@
 // BASE CLASS CONSTRAINTS
 
 std::size_t Constraints::getHash() const { return 0; }
+std::string Constraints::getHashStr() const { return ""; }
 
 bool Constraints::isAllowed(Agent agent, int step, BaseNode nodeFrom, BaseNode nodeTo) {
     std::ignore = agent;
@@ -18,6 +19,10 @@ int Constraints::getLatestConstraint(Agent agent) { std::ignore = agent; return 
 
 std::size_t hashConstraints::operator()(Constraints const& constraints) const {
     return constraints.getHash();
+}
+
+bool operator==(Constraints const& first, Constraints const& second) {
+    return first.getHashStr() == second.getHashStr();
 }
 
 
@@ -44,6 +49,10 @@ void PositiveConstraints::updateHash(Agent agent, int step, BaseNode baseNode) {
 
 std::size_t PositiveConstraints::getHash() const {
     return _hash;
+}
+
+std::string PositiveConstraints::getHashStr() const {
+    return _hashStr;
 }
 
 void PositiveConstraints::addConstraint(Agent agent, int step, BaseNode baseNode) {
@@ -133,11 +142,19 @@ std::size_t NegativeConstraints::getHash() const {
     return _hash;
 }
 
+std::string NegativeConstraints::getHashStr() const {
+    return _hashStr;
+}
+
 void NegativeConstraints::addVertexConstraint(Agent agent, int step, BaseNode baseNode) {
-    if (_vertexConstraints.contains(std::tuple<BaseNode, int>(baseNode, step))) {
+    if (!_vertexConstraints.contains(std::tuple<BaseNode, int>(baseNode, step))) {
         _vertexConstraints[std::tuple<BaseNode, int>(baseNode, step)] = std::unordered_set<Agent, hashAgent>();
     }
-    _vertexConstraints[std::tuple<BaseNode, int>(baseNode, step)].insert(agent);
+
+    if (!_vertexConstraints[std::tuple<BaseNode, int>(baseNode, step)].contains(agent)) {
+        _vertexConstraints[std::tuple<BaseNode, int>(baseNode, step)].insert(agent);
+        updateHashVertex(agent, step, baseNode);
+    }
 
     if (baseNode == agent.getGoal()) {
         if (!_latestConflicts.contains(agent)) {
@@ -146,17 +163,18 @@ void NegativeConstraints::addVertexConstraint(Agent agent, int step, BaseNode ba
         _latestConflicts[agent] = std::max(step, _latestConflicts[agent]);
     }
 
-    updateHashVertex(agent, step, baseNode);
 }
 
 void NegativeConstraints::addEdgeConstraint(Agent agent, int step, BaseNode nodeFrom, BaseNode nodeTo) {
     // Edge: nodeFrom --> nodeTo, agent at nodeTo at time step
-    if (_edgeConstraints.contains(std::tuple<BaseNode, BaseNode, int>(nodeFrom, nodeTo, step))) {
+    if (!_edgeConstraints.contains(std::tuple<BaseNode, BaseNode, int>(nodeFrom, nodeTo, step))) {
         _edgeConstraints[std::tuple<BaseNode, BaseNode, int>(nodeFrom, nodeTo, step)] = std::unordered_set<Agent, hashAgent>();
     }
-    _edgeConstraints[std::tuple<BaseNode, BaseNode, int>(nodeFrom, nodeTo, step)].insert(agent);
 
-    updateHashEdge(agent, step, nodeFrom, nodeTo);
+    if (!_edgeConstraints[std::tuple<BaseNode, BaseNode, int>(nodeFrom, nodeTo, step)].contains(agent)) {
+        _edgeConstraints[std::tuple<BaseNode, BaseNode, int>(nodeFrom, nodeTo, step)].insert(agent);
+        updateHashEdge(agent, step, nodeFrom, nodeTo);
+    }
 }
 
 bool NegativeConstraints::isAllowed(Agent agent, int step, BaseNode nodeFrom, BaseNode nodeTo) {

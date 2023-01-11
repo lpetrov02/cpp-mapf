@@ -8,6 +8,7 @@ class Constraints {
     friend std::ostream& operator<<(std::ostream& os, Constraints constraints);
 public:
     virtual std::size_t getHash() const;
+    virtual std::string getHashStr() const;
     virtual bool isAllowed(Agent agent, int step, BaseNode nodeFrom, BaseNode nodeTo);
     virtual int getLatestConstraint(Agent agent);
 };
@@ -29,12 +30,16 @@ struct hash_BaseNode_x2_Int {
 };
 
 
+bool operator==(Constraints const& first, Constraints const& second);
+
+
 class NegativeConstraints : public Constraints {        
 public:
     NegativeConstraints();
     void updateHashVertex(Agent agent, int step, BaseNode baseNode);
     void updateHashEdge(Agent agent, int step, BaseNode nodeFrom, BaseNode nodeTo);
     std::size_t getHash() const override;
+    std::string getHashStr() const override;
     void addVertexConstraint(Agent agent, int step, BaseNode baseNode);
     void addEdgeConstraint(Agent agent, int step, BaseNode nodeFrom, BaseNode nodeTo);
     bool isAllowed(Agent agent, int step, BaseNode nodeFrom, BaseNode nodeTo) override;
@@ -54,6 +59,7 @@ public:
     PositiveConstraints();
     void updateHash(Agent agent, int step, BaseNode baseNode);
     std::size_t getHash() const override;
+    std::string getHashStr() const override;
     void addConstraint(Agent agent, int step, BaseNode baseNode);
     bool isAllowed(Agent agent, int step, BaseNode nodeFrom, BaseNode nodeTo) override;
     int getLatestConstraint(Agent agent) override;

@@ -55,6 +55,8 @@ private:
 class Agent {
 public:
     Agent(int index, std::pair<int, int> start, std::pair<int, int> finish);
+    Agent(int index, BaseNode start, BaseNode finish);
+    Agent();
     BaseNode getStart() const;
     BaseNode getGoal() const;
     int getIndex() const;

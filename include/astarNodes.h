@@ -29,6 +29,13 @@ struct hashBaseNode {
     result_type operator()(argument_type const& s) const;
 };
 
+struct hashBaseNode_x2 {
+    typedef std::tuple<BaseNode, BaseNode> argument_type;
+    typedef std::size_t result_type;
+
+    result_type operator()(argument_type const& s) const;
+};
+
 
 class Node {
     friend bool operator==(Node const& first, Node const& second);
