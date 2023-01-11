@@ -130,6 +130,10 @@ Agent::Agent(int index, std::pair<int, int> start, std::pair<int, int> finish) {
     _goal = BaseNode(finish.first, finish.second);
 }
 
+Agent::Agent(int index, BaseNode start, BaseNode finish) : _index{index}, _start{start}, _goal{finish} {}
+
+Agent::Agent() : Agent(0, std::pair(0, 0), std::pair(0, 0)) {}
+
 BaseNode Agent::getStart() const {
     return _start;
 }

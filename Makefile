@@ -1,5 +1,5 @@
 CXXFLAGS = -Wall -Werror -Wextra -g -std=c++20
-OBJECTS = obj/main.o obj/astar.o obj/astarStructs.o obj/astarNodes.o obj/constraints.o obj/forTesting.o
+OBJECTS = obj/main.o obj/astar.o obj/astarStructs.o obj/astarNodes.o obj/constraints.o obj/forTesting.o obj/cbsStructs.o
 
 .PHONY: all clean
 
@@ -16,8 +16,9 @@ astar.o : astarStructs.h astar.h
 astarStructs.o : astarStructs.h astarNodes.h
 astarNodes.o : astarNodes.h
 constraints.o : constraints.h
-forTesting.o : astarNodes.h forTesting.h
-main.o : astar.h astarNodes.h astarStructs.h constraints.h forTesting.h
+forTesting.o : astarNodes.h forTesting.h cbsStructs.h
+cbsStructs.o : cbsStructs.h, astarStructs.h astarNode.h constraints.h
+main.o : astar.h astarNodes.h astarStructs.h constraints.h forTesting.h cbsStructs.h
 
 algo : obj $(OBJECTS)
 	g++ $(CXXFLAGS) -o $@ $(OBJECTS)

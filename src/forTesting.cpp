@@ -30,3 +30,21 @@ void writePathToFile(std::vector<BaseNode> path, std::string filename) {
 
     output.close();
 }
+
+
+void writeCbsSolution(Solution solution, std::string filename) {
+    std::ofstream output;
+    output.open(filename);
+
+    auto sol = solution.getSolutions();
+
+    for (auto it0 = sol.begin(); it0 != sol.end(); it0++) {
+        output << it0->first << ")";
+        for (auto it = it0->second.rbegin(); it != it0->second.rend(); it++) {
+            output << " (" << *it << ")";
+        }
+        output << "\n";
+    }
+
+    output.close();
+}

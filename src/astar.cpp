@@ -2,7 +2,7 @@
 
 
 AstarRes::AstarRes(bool found, std::vector<BaseNode> path, int steps) 
-: _found(found), _steps(steps), _path(path) {}
+: _found(found), _steps(steps), _path(std::move(path)) {}
 
 
 int computeCost(int i1, int j1, int i2, int j2) {
@@ -55,7 +55,7 @@ AstarRes astar(Map gridMap, Agent agent, Constraints* constraints, std::function
                     }
                     res.push_back(curNode.getBaseNode());
 
-                    return AstarRes(true, res, steps);
+                    return AstarRes(true, std::move(res), steps);
                 }
                 ast.addToOpen(newNode);
             }
