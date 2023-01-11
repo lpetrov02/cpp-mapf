@@ -40,8 +40,8 @@ std::pair<bool, Solution> cbs(
         auto vertexInfo = currentNode.findVertexConflicts();
         auto edgeInfo = currentNode.findEdgeConflicts();
 
-        std::cout << std::get<0>(vertexInfo) << " " << std::get<2>(vertexInfo) << std::endl;
-        std::cout << std::get<0>(edgeInfo) << " " << std::get<1>(edgeInfo) << " " << std::get<2>(edgeInfo) << std::endl;
+        // std::cout << std::get<0>(vertexInfo) << " " << std::get<2>(vertexInfo) << std::endl;
+        // std::cout << std::get<0>(edgeInfo) << " " << std::get<1>(edgeInfo) << " " << std::get<2>(edgeInfo) << std::endl;
 
         if (!std::get<0>(vertexInfo) && !std::get<0>(edgeInfo)) {
             return std::pair<bool, Solution>(true, currentNode.getSolution());
@@ -82,12 +82,12 @@ std::pair<bool, Solution> cbs(
                 ct.addToOpen(newNode1);
             }
 
-            newNode1.getConstraints()->addEdgeConstraint(
+            newNode2.getConstraints()->addEdgeConstraint(
                 std::get<4>(edgeInfo), std::get<6>(edgeInfo), std::get<2>(edgeInfo), std::get<1>(edgeInfo)
             );
             AstarRes res2 = astar(gridMap, std::get<4>(edgeInfo), newNode2.getConstraints(), heuristicFunc);
             if (res2._found) {
-                newNode1.resolve(std::get<4>(edgeInfo), res2._path);
+                newNode2.resolve(std::get<4>(edgeInfo), res2._path);
                 ct.addToOpen(newNode2);
             }
         }
@@ -114,11 +114,12 @@ int main() {
 
     // auto astarRes = astar(map, agent, &negConstraints);
 
-    std::vector<std::pair<int, int>> starts = { {0, 0}, {3, 0} };
-    std::vector<std::pair<int, int>> goals = { {3, 0}, {0, 0} };
+    std::vector<std::pair<int, int>> starts = { {0, 0}, {0, 2} };
+    std::vector<std::pair<int, int>> goals = { {0, 2}, {0, 0} };
 
     auto res = cbs(map, starts, goals);
     std::cout << (res.first ? "Found!" : "Not found") << std::endl;
+    writeCbsSolution(res.second, "./results/res0.txt");
 
     // writePathToFile(astarRes._path, "./results/res0.txt");
     return 0;
