@@ -71,7 +71,7 @@ void Map::readFromString(std::string cellStr, int width, int height) {
             for (auto& c : line) {
                 if (c == '.')
                     _cells[j][i] = 0;
-                else if (c == '#')
+                else if (c != ' ')
                     _cells[j][i] = 1;
                 else
                     continue;

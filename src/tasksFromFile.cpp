@@ -20,7 +20,7 @@ std::vector<task> readTasksFromFile(std::string fileName) {
     int goal_x;
     int goal_y;
     float len;
-    while (infile >> level >> mapFile >> w >> h >> start_y >> start_x >> goal_y >> goal_x >> len)
+    while (infile >> level >> mapFile >> w >> h >> start_x >> start_y >> goal_x >> goal_y >> len)
     {
         task taskFromFile = {
             start_x,

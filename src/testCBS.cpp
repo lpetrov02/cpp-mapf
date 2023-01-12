@@ -8,21 +8,21 @@
 #include "cbsFamily.h"
 
 
-int main() {
+int main2() {
     std::vector<std::string> directories = { 
-        "../tests/Tests/brc-scen-even",
-        "../tests/Tests/brc-scen-random",
-         "../tests/Tests/den-scen-even",
-         "../tests/Tests/den-scen-random",
-         "../tests/Tests/ost-scen-even",
-         "../tests/Tests/ost-scen-random" 
+        "./tests/Tests/brc-scen-even",
+        "./tests/Tests/brc-scen-random",
+         "./tests/Tests/den-scen-even",
+         "./tests/Tests/den-scen-random",
+         "./tests/Tests/ost-scen-even",
+         "./tests/Tests/ost-scen-random" 
     };
 
     std::vector<std::tuple<bool, double, int, Solution>> results;
 
     for(auto directory: directories) 
     {
-        auto mapInfo = getMap("../tests/Tests/brc202d.map");
+        auto mapInfo = getMap("./tests/Tests/brc202d.map");
 
         Map map = Map();
         map.readFromString(std::get<2>(mapInfo), std::get<0>(mapInfo), std::get<1>(mapInfo));
@@ -38,6 +38,7 @@ int main() {
                 {
                     starts.push_back(std::pair<int, int>(tasksToDo[tasksToDo.size() - 1].start_x, tasksToDo[tasksToDo.size() - 1].start_y));
                     goals.push_back(std::pair<int, int>(tasksToDo[tasksToDo.size() - 1].goal_x, tasksToDo[tasksToDo.size() - 1].goal_y));
+                    std::cout << "Start! " << starts[0].first << starts[0].second << goals[0].first << goals[0].second << std::endl;
                     auto result = cbs(map, starts, goals);
                     std::cout << std::get<0>(result) << " " << std::get<1>(result) << " " << std::get<0>(result) << std::endl;
                     results.push_back(result);

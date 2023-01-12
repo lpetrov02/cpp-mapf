@@ -1,5 +1,5 @@
 CXXFLAGS = -Wall -Werror -Wextra -g -std=c++20
-OBJECTS = obj/testCBS.o obj/main.o obj/astar.o obj/astarStructs.o obj/astarNodes.o obj/constraints.o obj/forTesting.o obj/cbsStructs.o obj/cbsDsStructs.o obj/cbsFamily.o obj/tasksFromFile.o
+OBJECTS = obj/main.o obj/testCBS.o obj/astar.o obj/astarStructs.o obj/astarNodes.o obj/constraints.o obj/forTesting.o obj/cbsStructs.o obj/cbsDsStructs.o obj/cbsFamily.o obj/tasksFromFile.o
 
 .PHONY: all clean
 
