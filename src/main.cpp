@@ -98,7 +98,7 @@ std::pair<bool, Solution> cbs(
 
 
 int main() {
-    auto mapInfo = getMap("./samples/map0.txt");
+    auto mapInfo = getMap("./samples/map1.txt");
 
     Map map = Map();
     map.readFromString(std::get<2>(mapInfo), std::get<0>(mapInfo), std::get<1>(mapInfo));
@@ -114,12 +114,14 @@ int main() {
 
     // auto astarRes = astar(map, agent, &negConstraints);
 
-    std::vector<std::pair<int, int>> starts = { {0, 0}, {0, 2} };
-    std::vector<std::pair<int, int>> goals = { {0, 2}, {0, 0} };
+    std::vector<std::pair<int, int>> starts = { {7, 1}, {9, 1}, {8, 0}, {8, 2}, {7, 0}, {9, 2}, {7, 2}, {9, 0} };
+    std::vector<std::pair<int, int>> goals = { {9, 1}, {7, 1}, {8, 2}, {8, 0}, {9, 2}, {7, 0}, {9, 0}, {7, 2} };
 
     auto res = cbs(map, starts, goals);
     std::cout << (res.first ? "Found!" : "Not found") << std::endl;
-    writeCbsSolution(res.second, "./results/res0.txt");
+    if (res.first) {
+        writeCbsSolution(res.second, "./results/res1.txt");
+    }
 
     // writePathToFile(astarRes._path, "./results/res0.txt");
     return 0;
