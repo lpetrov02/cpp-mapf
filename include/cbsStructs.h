@@ -70,4 +70,3 @@ private:
     std::vector<HighLevelNode> _open;
     std::unordered_set<HighLevelNode, hashHighLevelNode> _closed;
 };
-

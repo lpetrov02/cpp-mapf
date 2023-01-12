@@ -41,9 +41,16 @@ PositiveConstraints::PositiveConstraints() {
     _latestConflicts2 = std::unordered_map<BaseNode, int, hashBaseNode>();
 }
 
-void PositiveConstraints::updateHash(Agent agent, int step, BaseNode baseNode) {
+void PositiveConstraints::updateHashVertex(Agent agent, int step, BaseNode baseNode) {
     _hashStr += "{" + std::to_string(agent.getIndex()) + " " + std::to_string(baseNode._i) + " " +
                  std::to_string(baseNode._j) + " " + std::to_string(step) + "}";
+    _hash = std::hash<std::string>{}(_hashStr);
+}
+
+void PositiveConstraints::updateHashEdge(Agent agent, int step, BaseNode nodeFrom, BaseNode nodeTo) {
+    _hashStr += "{" + std::to_string(agent.getIndex()) + 
+                " (" + std::to_string(nodeFrom._i) + " " + std::to_string(nodeFrom._j) + ") -/-> (" + 
+                std::to_string(nodeTo._i) + " " + std::to_string(nodeTo._j) + ") " + std::to_string(step) + "}";
     _hash = std::hash<std::string>{}(_hashStr);
 }
 
@@ -73,8 +80,18 @@ void PositiveConstraints::addConstraint(Agent agent, int step, BaseNode baseNode
         }
         _latestConflicts2[baseNode] = std::max(step, _latestConflicts2[baseNode]);
     }
+}
 
-    updateHash(agent, step, baseNode);
+void PositiveConstraints::addVertexConstraint(Agent agent, int step, BaseNode baseNode) {
+    addConstraint(agent, step, baseNode);
+    updateHashVertex(agent, step, baseNode);
+}
+
+void PositiveConstraints::addEdgeConstraint(Agent agent, int step, BaseNode nodeFrom, BaseNode nodeTo) {
+    // Edge: nodeFrom --> nodeTo, agent at nodeTo at time step
+    addConstraint(agent, step - 1, nodeFrom);
+    addConstraint(agent, step, nodeTo);
+    updateHashEdge(agent, step, nodeFrom, nodeTo);
 }
 
 bool PositiveConstraints::isAllowed(Agent agent, int step, BaseNode nodeFrom, BaseNode nodeTo) {
@@ -90,16 +107,13 @@ bool PositiveConstraints::isAllowed(Agent agent, int step, BaseNode nodeFrom, Ba
     bool noEdgeConflicts = 
             !_constraints.contains(std::tuple<BaseNode, int>(nodeTo, step - 1)) ||
             !_constraints.contains(std::tuple<BaseNode, int>(nodeFrom, step)) ||
-            std::count_if(
+            (std::count_if(
                 _constraints[std::tuple<BaseNode, int>(nodeTo, step - 1)].begin(),
                 _constraints[std::tuple<BaseNode, int>(nodeTo, step - 1)].end(),
                 [&](Agent a) {
-                    if (!_constraints.contains(std::tuple<BaseNode, int>(nodeFrom, step))) {
-                        return false;
-                    }
                     return _constraints[std::tuple<BaseNode, int>(nodeFrom, step)].contains(a);
                 }
-            ) == 0;
+            ) == 0);
 
     return noVertexConflicts && noEdgeConflicts;
 }
@@ -116,7 +130,7 @@ int PositiveConstraints::getLatestConstraint(Agent agent) {
 }
 
 
-// NEGATIVE CONSTRAINTS FOR DISJOINT SPLITTING CBS
+// NEGATIVE CONSTRAINTS FOR CBS
 NegativeConstraints::NegativeConstraints() {
     _hashStr = "";
     _hash = std::hash<std::string>{}(_hashStr);
