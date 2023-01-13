@@ -192,6 +192,19 @@ std::pair<bool, Solution> cbsDS(
 
 
 int main() {
+    auto mapInfo = getMap("./samples/warehouse.txt");
+
+    Map map = Map();
+    map.readFromString(std::get<2>(mapInfo), std::get<0>(mapInfo), std::get<1>(mapInfo));
+
+    
+    
+    return 0;
+}
+
+
+/*
+int main() {
     auto mapInfo = getMap("./samples/map202.txt");
 
     Map map = Map();
@@ -230,3 +243,4 @@ int main() {
     
     return 0;
 }
+*/

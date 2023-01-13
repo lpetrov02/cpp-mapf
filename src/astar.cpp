@@ -52,7 +52,7 @@ AstarRes astar(Map gridMap, Agent agent, Constraints* constraints, std::function
 
                     while (ast.CLOSED().contains(curNode.getParentTuple())) {
                         res.push_back(curNode.getBaseNode());
-                        curNode = ast.CLOSED().find(curNode.getParentTuple())->second;
+                        curNode = ast.CLOSED()[curNode.getParentTuple()];
                     }
                     res.push_back(curNode.getBaseNode());
 
