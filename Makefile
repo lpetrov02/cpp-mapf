@@ -1,5 +1,5 @@
 CXXFLAGS = -Wall -Werror -Wextra -g -std=c++20
-OBJECTS = obj/main.o obj/testCBS.o obj/astar.o obj/astarStructs.o obj/astarNodes.o obj/constraints.o obj/forTesting.o obj/cbsStructs.o obj/cbsDsStructs.o obj/cbsFamily.o obj/tasksFromFile.o
+OBJECTS = obj/testCBS.o obj/astar.o obj/astarStructs.o obj/astarNodes.o obj/constraints.o obj/forTesting.o obj/cbsStructs.o obj/cbsDsStructs.o obj/cbsFamily.o obj/tasksFromFile.o
 
 .PHONY: all clean
 
@@ -20,7 +20,6 @@ forTesting.o : astarNodes.h forTesting.h cbsStructs.h
 cbsStructs.o : cbsStructs.h astarStructs.h astarNode.h constraints.h
 cbsDsStructs.o : cbsStructs.h cbsDsStructs.h astarStructs.h astarNode.h constraints.h
 cbsFamily.o : astar.h astarNodes.h astarStructs.h constraints.h forTesting.h cbsStructs.h cbsDsStructs.h timeException.h
-main.o : astar.h astarNodes.h astarStructs.h constraints.h forTesting.h cbsStructs.h cbsDsStructs.h cbsFamily.h
 tasksFromFile.o : tasksFromFile.h
 testCBS.o : astar.h astarNodes.h astarStructs.h constraints.h forTesting.h cbsStructs.h cbsDsStructs.h cbsFamily.h tasksFromFile.h timeException.h
 

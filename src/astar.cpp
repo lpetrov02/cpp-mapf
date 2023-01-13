@@ -46,6 +46,7 @@ AstarRes astar(Map gridMap, Agent agent, Constraints* constraints, std::function
             auto newPoint = BaseNode(newNode._i, newNode._j);
             if (!ast.wasExpanded(newNode) && constraints->isAllowed(agent, newNode._t, currentPoint, newPoint)) {  
                 if (newPoint == agent.getGoal() && newNode._t > latestConstraint) {
+                    std::cout << "goal reached" << std::endl;
                     Node curNode = newNode;
                     std::vector<BaseNode> res;
 

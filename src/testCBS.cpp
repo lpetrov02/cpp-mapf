@@ -8,7 +8,7 @@
 #include "cbsFamily.h"
 
 
-int main2() {
+int main() {
     std::vector<std::string> directories = { 
         "./tests/Tests/brc-scen-even",
         "./tests/Tests/brc-scen-random",
