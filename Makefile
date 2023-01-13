@@ -19,7 +19,7 @@ constraints.o : constraints.h
 forTesting.o : astarNodes.h forTesting.h cbsStructs.h
 cbsStructs.o : cbsStructs.h astarStructs.h astarNode.h constraints.h
 cbsStructs.o : cbsStructs.h cbsDsStructs.h astarStructs.h astarNode.h constraints.h
-main.o : astar.h astarNodes.h astarStructs.h constraints.h forTesting.h cbsStructs.h cbsDsStructs.h
+main.o : astar.h astarNodes.h astarStructs.h constraints.h forTesting.h cbsStructs.h cbsDsStructs.h timeException.h
 
 algo : obj $(OBJECTS)
 	g++ $(CXXFLAGS) -o $@ $(OBJECTS)

@@ -98,7 +98,7 @@ void Map::setGridCells(int width, int height, std::vector<std::vector<int>> grid
 
 
 bool Map::inBounds(int i, int j) {
-    return (0 <= j && j < _width) && (0 <= i && i < _height);
+    return (0 <= i && i < _width) && (0 <= j && j < _height);
 }
 
 
@@ -111,7 +111,7 @@ std::vector<std::pair<int, int>> Map::getNeighbors(int i, int j) {
     auto neighbors = std::vector<std::pair<int, int>>();
     std::vector<std::pair<int, int>> delta = { {0, 1}, {1, 0}, {0, -1}, {-1, 0}, {0, 0} };
     for (auto& d : delta) {
-        if (inBounds(i + d.first, j + d.second) and isTraversable(i + d.first, j + d.second)) {
+        if (inBounds(i + d.first, j + d.second) && isTraversable(i + d.first, j + d.second)) {
             neighbors.push_back({i + d.first, j + d.second});
         }
     }

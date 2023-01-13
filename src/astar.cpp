@@ -46,13 +46,13 @@ AstarRes astar(Map gridMap, Agent agent, Constraints* constraints, std::function
             auto newPoint = BaseNode(newNode._i, newNode._j);
             if (!ast.wasExpanded(newNode) && constraints->isAllowed(agent, newNode._t, currentPoint, newPoint)) {  
                 if (newPoint == agent.getGoal() && newNode._t > latestConstraint) {
-                    std::cout << "goal reached!" << std::endl;
+                    // std::cout << "goal reached!" << std::endl;
                     Node curNode = newNode;
                     std::vector<BaseNode> res;
 
                     while (ast.CLOSED().contains(curNode.getParentTuple())) {
                         res.push_back(curNode.getBaseNode());
-                        curNode = ast.CLOSED()[curNode.getParentTuple()];
+                        curNode = ast.CLOSED().find(curNode.getParentTuple())->second;
                     }
                     res.push_back(curNode.getBaseNode());
 
