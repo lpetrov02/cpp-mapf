@@ -135,10 +135,10 @@ std::pair<bool, Solution> cbsDS(
         auto vertexInfo = currentNode.findVertexConflicts();
         auto edgeInfo = currentNode.findEdgeConflicts();
 
-        std::cout << "Conflicts info:" << std::endl;
-        std::cout << std::get<0>(vertexInfo) << " " << std::get<2>(vertexInfo) << std::endl;
-        std::cout << std::get<0>(edgeInfo) << " " << std::get<1>(edgeInfo) << " " << std::get<2>(edgeInfo) << "\n" << std::endl;
-        std::cout << "CurrentNode.cost: " << currentNode.getCost() << "\n" << std::endl;
+        // std::cout << "Conflicts info:" << std::endl;
+        // std::cout << std::get<0>(vertexInfo) << " " << std::get<2>(vertexInfo) << std::endl;
+        // std::cout << std::get<0>(edgeInfo) << " " << std::get<1>(edgeInfo) << " " << std::get<2>(edgeInfo) << "\n" << std::endl;
+        // std::cout << "CurrentNode.cost: " << currentNode.getCost() << "\n" << std::endl;
 
         if (!std::get<0>(vertexInfo) && !std::get<0>(edgeInfo)) {
             return std::pair<bool, Solution>(true, currentNode.getSolution());
@@ -192,34 +192,41 @@ std::pair<bool, Solution> cbsDS(
 
 
 int main() {
-    auto mapInfo = getMap("./samples/map1.txt");
+    auto mapInfo = getMap("./samples/map202.txt");
 
     Map map = Map();
     map.readFromString(std::get<2>(mapInfo), std::get<0>(mapInfo), std::get<1>(mapInfo));
 
-    // Agent agent = Agent(0, std::pair<int, int>(0, 0), std::pair<int, int>(0, 2));
+    Agent agent = Agent(0, std::pair<int, int>(455, 437), std::pair<int, int>(47, 119));
 
-    // PositiveConstraints constraints;
+    PositiveConstraints constraints;
     // constraints.addConstraint(agent, 25, BaseNode(9, 9));
 
     // NegativeConstraints negConstraints;
     // negConstraints.addEdgeConstraint(agent, 1, BaseNode(0, 0), BaseNode(1, 0));
     // negConstraints.addVertexConstraint(agent, 3, BaseNode(2, 0));
 
-    // auto astarRes = astar(map, agent, &negConstraints);
+    auto astarRes = astar(map, agent, &constraints);
 
-    std::vector<std::pair<int, int>> starts = { {7, 1}, {9, 1}, {8, 0}, {8, 2}, {7, 0}, {9, 2}, {7, 2}, {9, 0} };
-    std::vector<std::pair<int, int>> goals = { {9, 1}, {7, 1}, {8, 2}, {8, 0}, {9, 2}, {7, 0}, {9, 0}, {7, 2} };
+    // std::vector<std::pair<int, int>> starts = { {7, 1}, {9, 1}, {8, 0}, {8, 2}, {7, 0}, {9, 2}, {7, 2}, {9, 0} };
+    // std::vector<std::pair<int, int>> goals = { {9, 1}, {7, 1}, {8, 2}, {8, 0}, {9, 2}, {7, 0}, {9, 0}, {7, 2} };
 
     // std::vector<std::pair<int, int>> starts = { {7, 1}, {9, 1}, {8, 0}, {8, 2} };
     // std::vector<std::pair<int, int>> goals = { {9, 1}, {7, 1}, {8, 2}, {8, 0} };
 
-    auto res = cbsDS(map, starts, goals);
-    std::cout << (res.first ? "Found!" : "Not found") << std::endl;
-    if (res.first) {
-        writeCbsSolution(res.second, "./results/res1.txt");
-    }
+    // std::vector<std::pair<int, int>> starts = { {10, 131} };
+    // std::vector<std::pair<int, int>> goals = { {470, 90} };
 
-    // writePathToFile(astarRes._path, "./results/res0.txt");
+    // auto res = cbs(map, starts, goals);
+    // std::cout << (res.first ? "Found!" : "Not found") << std::endl;
+    // if (res.first) {
+    //     writeCbsSolution(res.second, "./results/res202.txt");
+    // }
+
+    std::cout << (astarRes._found ? "Found!" : "Not found") << std::endl;
+    if (astarRes._found) {
+        writePathToFile(astarRes._path, "./results/res202.txt");
+    }
+    
     return 0;
 }

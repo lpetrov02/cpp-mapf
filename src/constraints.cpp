@@ -63,7 +63,7 @@ std::string PositiveConstraints::getHashStr() const {
 }
 
 void PositiveConstraints::addConstraint(Agent agent, int step, BaseNode baseNode) {
-    if (_constraints.contains(std::tuple<BaseNode, int>(baseNode, step))) {
+    if (!_constraints.contains(std::tuple<BaseNode, int>(baseNode, step))) {
         _constraints[std::tuple<BaseNode, int>(baseNode, step)] = std::unordered_set<Agent, hashAgent>();
     }
     _constraints[std::tuple<BaseNode, int>(baseNode, step)].insert(agent);
